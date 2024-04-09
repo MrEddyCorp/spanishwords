@@ -3,23 +3,30 @@ import sqlite3
 import requests
 import chardet
 import data
+import re
 
 cuentos = []
 all_words = {}
 
 
 
+
 url_base = "https://ciudadseva.com/"
-autor = "autor/jorge-luis-borges/cuentos/"
+#autor = "autor/jorge-luis-borges/cuentos/"
+#autor = "autor/horacio-quiroga/cuentos/"
+autor = "/autor/mario-benedetti/cuentos/"
 
 hdr = {'User-Agent': 'Mozilla/5.0'}
 
 
 def exist(w):
     size = str(len(w))
-    if(not 'i'+size in all_words):
-        all_words['i'+size] = data.getwords(w)
-    return w.lower() in all_words['i'+size]
+    tables = data.getTablesNames()
+    if  not "words_"+size in tables:
+        return False
+
+    all_words['i'+size] = data.getwords(w)
+    return w.lower().strip() in all_words['i'+size]
 
 
 def getwords(url):
@@ -32,7 +39,11 @@ def getwords(url):
 
     for p in parrafos:
         for w in p.text.split(' '):
+            x = re.search("\W", w)
+            if x:
+                continue
             if(not exist(w)):
+                print(w)
                 data.SaveWord(w)
 
 

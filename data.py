@@ -13,7 +13,7 @@ def SaveWord(w):
         cursor.execute(sql)
         conn.commit()
 
-        sql_in = f"INSERT INTO {table_name}(word) VALUES ('{w.lower()}')"
+        sql_in = f"INSERT INTO {table_name}(word) VALUES ('{w.lower().strip()}')"
         cursor.execute(sql_in)
         conn.commit()
     except ValueError:
@@ -29,4 +29,13 @@ def getwords(w):
     for record in records:
         words.append(record[0])
     return words
+
+def getTablesNames():
+    tables = []
+    sql = f"SELECT name FROM sqlite_master WHERE type='table'"
+    cursor.execute(sql)
+    records = cursor.fetchall()
+    for record in records:
+        tables.append(record[0])
+    return tables
     
