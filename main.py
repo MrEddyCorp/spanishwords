@@ -7,20 +7,24 @@ import re
 
 cuentos = []
 all_words = {}
+c = 0
 
 
-
+autors = ["autor/jorge-luis-borges/cuentos/","autor/horacio-quiroga/cuentos/","autor/mario-benedetti/cuentos/","autor/elena-garro/cuentos/","guy-de-maupassant/cuentos/","autor/julio-cortazar/cuentos/"]
 
 url_base = "https://ciudadseva.com/"
 #autor = "autor/jorge-luis-borges/cuentos/"
 #autor = "autor/horacio-quiroga/cuentos/"
-autor = "/autor/mario-benedetti/cuentos/"
+autor = "autor/mario-benedetti/cuentos/"
 
 hdr = {'User-Agent': 'Mozilla/5.0'}
 
 
 def exist(w):
     size = str(len(w))
+    global c
+    c = c + 1
+    print(f"analizando: {str(c)} palabras",end='\r')
     tables = data.getTablesNames()
     if  not "words_"+size in tables:
         return False
@@ -49,14 +53,18 @@ def getwords(url):
 
 
 
+def getpages():
+    for autor in autors:
+        _req = url_base + autor
+        _page = requests.get(_req,headers=hdr)
+        soup = BeautifulSoup(_page.content, 'html.parser')
+        coding = chardet.detect(_page.content).get('encoding')
 
-_req = url_base + autor
-_page = requests.get(_req,headers=hdr)
-soup = BeautifulSoup(_page.content, 'html.parser')
-coding = chardet.detect(_page.content).get('encoding')
+        urls =  soup.find_all('li',{'class','text-center'})
 
-urls =  soup.find_all('li',{'class','text-center'})
+        for url in urls:
+            cuentos.append(url.find('a')['href'])
+            getwords(url.find('a')['href'])
 
-for url in urls:
-    cuentos.append(url.find('a')['href'])
-    getwords(url.find('a')['href'])
+
+getpages()

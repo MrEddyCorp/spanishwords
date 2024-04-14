@@ -38,4 +38,15 @@ def getTablesNames():
     for record in records:
         tables.append(record[0])
     return tables
+
+def getWordsBySize(_size):
+    words = []
+    size = str(_size)
+    table_name = "words_"+str(size)
+    sql = f'select * from {table_name}'
+    cursor.execute(sql)
+    records = cursor.fetchall()
+    for record in records:
+        words.append(record[0])
+    return words
     
